@@ -1,0 +1,185 @@
+#include <iostream> 
+#include <cmath>
+using namespace std;
+
+// Перевірка високосного року 
+bool isLeapYear(int year) {
+    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        return true;
+    }
+    return false;
+}
+
+void checkLeapYear() {
+    Step1:
+    cout << "\nПеревірка високосного року\n";
+    cout << "Введіть номер року: ";
+    int year;
+    cin >> year;
+
+    if (cin.fail()) { // перевірка на відсутність помилок при отриманні введеного від користувача числа
+        cout << "\n\"year\" повинно бути числом\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    if (year <= 0) {
+        cout << "\n\"year\" має бути більше нуля\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    if (isLeapYear(year)) {
+        cout << "Рік " << year << " є високосним і має 366 днів.\n";
+    }
+    else {
+        cout << "Рік " << year << " є звичайним і має 365 днів.\n";
+    }
+}
+
+double inputSideOfSquare() {
+    Step1:
+    cout << "Введіть сторону квадрата a: ";
+    double a;
+    cin >> a;
+
+    if (cin.fail()) { // перевірка на відсутність помилок при отриманні введеного від користувача числа
+        cout << "\n\"a\" повинно бути числом\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    if (a <= 0) {
+        cout << "\n\"a\" має бути більше нуля\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    return a;
+}
+
+double inputCoordinate(char nameOfAxis) {
+    Step1:
+    cout << "Введіть координату " << nameOfAxis << ": ";
+    double coordinate;
+    cin >> coordinate;
+
+    if (cin.fail()) { // перевірка на відсутність помилок при отриманні введеного від користувача числа
+        cout << "\n\"" << nameOfAxis << "\" повинно бути числом\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    return coordinate;
+}
+
+// Функція перевірки точки в коричневій області 
+bool isPointInBrownArea(double x, double y, double a) {
+    double r = a / 2.0; // Радіус кола 
+
+    // Перевірка для for all sectors
+    bool inFirstBrownSector = (x * x + y * y <= r * r && x <= 0 && y <= x); // перевірка на наявність точки в секторі кола коричневої області
+    bool inSecondBrownSector = (x * x + y * y >= r * r && x >= -r && y >= -r && y <= 0 && y >= x); // перевірка на наявність точки у маленькому шматочку коричневої області зліва внизу
+    bool inThirdBrownSector = (x * x + y * y >= r * r && x <= r && y <= r && y >= 0 && y <= x); // перевірка на наявність точки у маленькому шматочку коричневої області праворуч угорі
+    return inFirstBrownSector || inSecondBrownSector || inThirdBrownSector; // Повертає true, якщо точка буде в одному з коричневих секторів
+
+}
+
+void pointInBrownAreaCheck() {
+    double x, y, a;
+    x = inputCoordinate('x');
+    y = inputCoordinate('y');
+    a = inputSideOfSquare();
+
+    if (isPointInBrownArea(x, y, a)) cout << "Точка належить до коричневої області";
+    else cout << "Точка не належить до коричневої області";
+}
+
+// Розрахунок площі та периметра коричневої області 
+double calculateAreaOfBrownArea(double a) {
+    double r = a / 2.0;
+
+    // оскільки нам треба знайти площу – то перенесемо всі фігури в один квадрат. За підсумком отримуємо квадрат із вирізаним сектором та половину цього сектора
+    // Розрахунок площі коричневої області 
+    double sectorArea = (M_PI * r * r) / 4.0; // площа чверті кола
+    double halfSectorArea = sectorArea / 2.0; // площа однієї восьмої кола
+    double squareWithoutSectorArea = r * r - sectorArea; // сума площ двох маленьких шматочків коричневої області
+    double brownArea = halfSectorArea + squareWithoutSectorArea; // сума всіх площ коричневої області
+
+    return brownArea;
+}
+
+double calculatePerimetrOfBrownArea(double a) {
+    double r = a / 2.0;
+
+    double lengthOfArc = M_PI * r / 4.0; // знаходження довжини дуги, яка становить одну восьму від кола
+    double lengthOfSector = r * 2 + lengthOfArc; // знаходження периметра сектора
+
+    double hypotenuse = sqrt(r * r * 2);
+    double hypotenuseWithoutRadius = hypotenuse - r; // знаходження маленького діагонального шматочка
+
+    double lengthOfLittleStubOfBrownArea = lengthOfArc + r + hypotenuseWithoutRadius; // знаходження периметра маленького діагонального шматочка
+
+    double lengthOfBrownArea = lengthOfSector + lengthOfLittleStubOfBrownArea * 2; // знаходження периметра всієї коричневої області
+    return lengthOfBrownArea;
+}
+
+void calculateAreaAndPerimetrOfBrownArea() {
+    double a = inputSideOfSquare();
+
+    cout << "Площа коричневої області: " << calculateAreaOfBrownArea(a) << "\n";
+    cout << "Периметр коричневої області: " << calculatePerimetrOfBrownArea(a) << "\n";
+}
+
+int inputNumberOfTask() {
+    Step1:
+    cout << "Оберіть завдання:\n";
+    cout << "1 - Перевірка високосного року\n";
+    cout << "2 - Розрахунок належності точки до коричневої області\n";
+    cout << "3 - Розрахунок параметрів коричневої області\n";
+    cout << "Ваш вибір: ";
+
+    int choice;
+    cin >> choice;
+
+    if (cin.fail()) { // перевірка на відсутність помилок при отриманні введеного від користувача числа
+        cout << "\n\"Ваш вибір\" повинно бути числом\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    if (choice <= 0 || choice >= 4) {
+        cout << "\n\"Ваш вибір\" має дорівнювати одному, двом або трьом\n";
+        cin.clear();
+        cin.ignore();
+        goto Step1;
+    }
+
+    return choice;
+}
+
+int main() {
+    int choice = inputNumberOfTask();
+
+    switch (choice) {
+    case 1:
+        checkLeapYear();
+        break;
+    case 2:
+        pointInBrownAreaCheck();
+        break;
+    case 3:
+        calculateAreaAndPerimetrOfBrownArea();
+        break;
+    default:
+        cerr << "Неправильний вибір. Завершення програми.\n";
+    }
+
+    return 0;
+}
